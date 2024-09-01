@@ -11,6 +11,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface QuestionMapper extends BaseMapper<Question> {
 
+
+    /**
+     * 根据用户ID获取问题信息
+     *
+     * @param id 用户ID
+     * @return 返回一个包含用户ID对应问题信息的Question对象，如果未找到则返回null
+     */
+    Question getUserIdById(Long id);
 }
 
 

@@ -17,10 +17,11 @@
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
-        id,title,content,
-        tags,answer,userId,
-        editTime,createTime,updateTime,
-        isDelete
-    </sql>
+
+    <select id="getUserIdById" resultType="com.whut.friends.model.entity.Question">
+        select id, userId
+        from whut_friends.question
+        where isDelete = 0
+          and id = #{id};
+    </select>
 </mapper>

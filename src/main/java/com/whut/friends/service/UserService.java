@@ -23,11 +23,7 @@ public interface UserService extends IService<User> {
      * 获取查询条件
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
-    
-    /**
-     * 获取用户封装
-     */
-    UserVO getUserVO(User user);
+
 
     /**
      * 分页获取用户封装

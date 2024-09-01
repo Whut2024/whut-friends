@@ -11,12 +11,14 @@ import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionAddRe
 import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionQueryRequest;
 import com.whut.friends.model.entity.QuestionBankQuestion;
 import com.whut.friends.model.entity.User;
-import com.whut.friends.model.vo.QuestionBankQuestionVO;
 import com.whut.friends.service.QuestionBankQuestionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 题库-题目接口

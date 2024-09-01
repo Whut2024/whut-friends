@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.whut.friends.model.dto.quetionbank.QuestionBankQueryRequest;
 import com.whut.friends.model.entity.QuestionBank;
 import com.whut.friends.model.vo.QuestionBankVO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 题库服务
@@ -23,14 +24,20 @@ public interface QuestionBankService extends IService<QuestionBank> {
      * 获取查询条件
      */
     QueryWrapper<QuestionBank> getQueryWrapper(QuestionBankQueryRequest questionBankQueryRequest);
-    
-    /**
-     * 获取题库封装
-     */
-    QuestionBankVO getQuestionBankVO(QuestionBank questionBank);
+
 
     /**
      * 分页获取题库封装
      */
     Page<QuestionBankVO> getQuestionBankVOPage(Page<QuestionBank> questionBankPage);
+
+
+    /**
+     * 根据ID删除问题库
+     *
+     * @param id 问题库的ID
+     * @return 如果删除成功则返回true，否则返回false
+     */
+    @Transactional
+    boolean removeQuestionBank(Long id);
 }

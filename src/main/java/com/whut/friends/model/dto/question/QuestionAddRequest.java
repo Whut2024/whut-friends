@@ -13,11 +13,6 @@ public class QuestionAddRequest implements Serializable {
 
 
     /**
-     * id
-     */
-    private Long id;
-
-    /**
      * 标题
      */
     private String title;

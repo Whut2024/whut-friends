@@ -5,18 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.friends.common.ErrorCode;
+import com.whut.friends.constant.CommonConstant;
 import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.mapper.QuestionMapper;
 import com.whut.friends.model.dto.question.QuestionQueryRequest;
 import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.vo.QuestionVO;
 import com.whut.friends.service.QuestionService;
+import com.whut.friends.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
  * 题目服务实现
- *
  */
 @Service
 @Slf4j
@@ -26,55 +27,93 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     /**
      * 校验数据
      *
-     * @param question
-     * @param add      对创建的数据进行校验
+     * @param add 对创建的数据进行校验
      */
     @Override
     public void validQuestion(Question question, boolean add) {
         ThrowUtils.throwIf(question == null, ErrorCode.PARAMS_ERROR);
-        // todo 从对象中取值
-        String title = question.getTitle();
-        // 创建数据时，参数不能为空
-        if (add) {
-            // todo 补充校验规则
-            ThrowUtils.throwIf(StrUtil.isBlank(title), ErrorCode.PARAMS_ERROR);
-        }
-        // 修改数据时，有参数则校验
-        // todo 补充校验规则
-        if (StrUtil.isNotBlank(title)) {
-            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
-        }
+
+        final Long id = question.getId();
+        final String title = question.getTitle();
+        final String content = question.getContent();
+        final String tags = question.getTags();
+        final String answer = question.getAnswer();
+        final Long userId = question.getUserId();
+
+        ThrowUtils.throwIf(!add && (id == null || id <= 0), ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(!add && userId != null && userId <= 0, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(StrUtil.isNotBlank(title) && title.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(content) && content.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(tags) && tags.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(answer) && answer.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
     }
 
     /**
      * 获取查询条件
-     *
-     * @param questionQueryRequest
-     * @return
      */
     @Override
     public QueryWrapper<Question> getQueryWrapper(QuestionQueryRequest questionQueryRequest) {
-        QueryWrapper<Question> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<Question> wrapper = new QueryWrapper<>();
         if (questionQueryRequest == null) {
-            return queryWrapper;
+            return wrapper;
         }
-        // todo 从对象中取值
+
+        final Long id = questionQueryRequest.getId();
+        if (id != null) {
+            wrapper.eq("id", id);
+            return wrapper;
+        }
+
+
+        final String title = questionQueryRequest.getTitle();
+        final String content = questionQueryRequest.getContent();
+        final String tags = questionQueryRequest.getTags();
+        final String answer = questionQueryRequest.getAnswer();
+        final Long userId = questionQueryRequest.getUserId();
+        final String sortField = questionQueryRequest.getSortField();
+        final String sortOrder = questionQueryRequest.getSortOrder();
+
+        wrapper.eq(StrUtil.isNotBlank(title), "title", title);
+        wrapper.eq(StrUtil.isNotBlank(content), "content", content);
+        wrapper.eq(StrUtil.isNotBlank(tags), "tags", tags);
+        wrapper.eq(StrUtil.isNotBlank(answer), "answer", answer);
+        wrapper.eq(userId != null, "userId", userId);
+
 
         // 排序规则
-/*        queryWrapper.orderBy(SqlUtils.validSortField(sortField),
+        wrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
-                sortField);*/
-        return queryWrapper;
+                sortField);
+        return wrapper;
     }
 
-    @Override
-    public QuestionVO getQuestionVO(Question question) {
-        return null;
-    }
 
     @Override
     public Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage) {
         return null;
+    }
+
+    // todo 联合添加 题库-题目 表
+    @Override
+    public boolean saveQuestion(Question question) {
+        final boolean savedQuestion = this.save(question);
+        ThrowUtils.throwIf(!savedQuestion, ErrorCode.OPERATION_ERROR);
+
+        return savedQuestion;
+    }
+
+    @Override
+    public Question getUserIdById(Long id) {
+        return this.baseMapper.getUserIdById(id);
+    }
+
+    // todo 联合删除 题库-题目 表
+    @Override
+    public boolean removeQuestion(Long id) {
+        final boolean removedQuestion = this.removeById(id);
+        ThrowUtils.throwIf(!removedQuestion, ErrorCode.OPERATION_ERROR);
+
+        return removedQuestion;
     }
 
 
