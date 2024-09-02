@@ -1,19 +1,15 @@
 package com.whut.friends.model.dto.questionbankquestion;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 创建题库-题目请求
  *
  */
 @Data
-public class QuestionBankQuestionAddRequest implements Serializable {
+public class QuestionBankQuestionRemoveRequest implements Serializable {
 
 
     /**
