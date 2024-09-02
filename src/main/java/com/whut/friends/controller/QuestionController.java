@@ -56,7 +56,7 @@ public class QuestionController {
         question.setUserId(loginUser.getId());
 
         // 写入数据库
-        final boolean result = questionService.saveQuestion(question);
+        final boolean result = questionService.save(question);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
 
         // 返回新写入的数据 id

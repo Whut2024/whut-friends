@@ -93,14 +93,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         return null;
     }
 
-    // todo 联合添加 题库-题目 表
-    @Override
-    public boolean saveQuestion(Question question) {
-        final boolean savedQuestion = this.save(question);
-        ThrowUtils.throwIf(!savedQuestion, ErrorCode.OPERATION_ERROR);
-
-        return savedQuestion;
-    }
 
     @Override
     public Question getUserIdById(Long id) {

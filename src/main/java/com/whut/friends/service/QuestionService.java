@@ -33,17 +33,6 @@ public interface QuestionService extends IService<Question> {
 
 
     /**
-     * 保存问题和题库关系
-     *
-     * @param question 要保存的问题对象
-     * @return 如果保存成功返回true，否则返回false
-     * @throws RuntimeException 如果保存过程中出现异常，则抛出运行时异常
-     */
-    @Transactional
-    boolean saveQuestion(Question question);
-
-
-    /**
      * 根据用户ID获取问题信息
      *
      * @param id 用户ID

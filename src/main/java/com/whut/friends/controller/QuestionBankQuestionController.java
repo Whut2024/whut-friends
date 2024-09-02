@@ -58,43 +58,6 @@ public class QuestionBankQuestionController {
         return ResultUtils.success(newQuestionBankQuestionId);
     }
 
-    /**
-     * 删除题库-题目
-     */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteQuestionBankQuestion(@RequestBody DeleteRequest deleteRequest) {
-        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = null;
-        long id = deleteRequest.getId();
-        // 判断是否存在
-        QuestionBankQuestion oldQuestionBankQuestion = questionBankQuestionService.getById(id);
-        ThrowUtils.throwIf(oldQuestionBankQuestion == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可删除
-        if (!oldQuestionBankQuestion.getUserId().equals(user.getId())&& false) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = questionBankQuestionService.removeById(id);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
-
-
-
-    /**
-     * 分页获取题库-题目列表（仅管理员可用）
-     */
-    @PostMapping("/list/page")
-    public BaseResponse<Page<QuestionBankQuestion>> listQuestionBankQuestionByPage(@RequestBody QuestionBankQuestionQueryRequest questionBankQuestionQueryRequest) {
-        long current = questionBankQuestionQueryRequest.getCurrent();
-        long size = questionBankQuestionQueryRequest.getPageSize();
-        // 查询数据库
-        Page<QuestionBankQuestion> questionBankQuestionPage = questionBankQuestionService.page(new Page<>(current, size),
-                questionBankQuestionService.getQueryWrapper(questionBankQuestionQueryRequest));
-        return ResultUtils.success(questionBankQuestionPage);
-    }
 
     // endregion
 }
