@@ -1,17 +1,18 @@
 package com.whut.friends.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
 import com.whut.friends.common.ResultUtils;
+import com.whut.friends.constant.UserConstant;
 import com.whut.friends.exception.ThrowUtils;
-import com.whut.friends.model.dto.user.UserAddRequest;
-import com.whut.friends.model.dto.user.UserEditRequest;
-import com.whut.friends.model.dto.user.UserQueryRequest;
-import com.whut.friends.model.dto.user.UserUpdateRequest;
+import com.whut.friends.model.dto.user.*;
 import com.whut.friends.model.entity.User;
 import com.whut.friends.model.enums.UserRoleEnum;
 import com.whut.friends.model.vo.UserVO;
@@ -20,7 +21,12 @@ import com.whut.friends.utils.UserHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用户接口
@@ -34,7 +40,45 @@ public class UserController {
 
     private final UserService userService;
 
+
+    private final StringRedisTemplate redisTemplate;
+
     // region 增删改查
+
+
+    @PostMapping("/login")
+    public BaseResponse<String> login(@RequestBody LoginRequest loginRequest) {
+        // 校验
+        ThrowUtils.throwIf(loginRequest == null, ErrorCode.PARAMS_ERROR);
+
+        final String userAccount = loginRequest.getUserAccount();
+        final String userPassword = loginRequest.getUserPassword();
+
+        ThrowUtils.throwIf(StrUtil.isBlank(userAccount) || userAccount.length() > 16, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(StrUtil.isBlank(userPassword) || userPassword.length() > 16, ErrorCode.PARAMS_ERROR);
+
+        // 查库
+        final LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUserAccount, userAccount).eq(User::getUserPassword, userPassword);
+
+        final User user = userService.getOne(wrapper);
+        ThrowUtils.throwIf(user == null, ErrorCode.PARAMS_ERROR, "账号或密码错误");
+
+        // 存 Version
+        final String cacheKey = UserConstant.USER_LOGIN_VERSION + user.getId();
+        final String newVersion = String.valueOf(redisTemplate.opsForValue().increment(cacheKey));
+        redisTemplate.expire(cacheKey, UserConstant.USER_LOGIN_VERSION_TTL, TimeUnit.MINUTES);
+
+        // 生成 JWT
+        final Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put(UserConstant.VERSION_KEY, newVersion);
+        payloadMap.put(UserConstant.TTL, UserConstant.USER_LOGIN_TTL);
+        payloadMap.put(UserConstant.USER_KEY, user);
+        final String token = JWTUtil.createToken(payloadMap, UserConstant.KEY_BYTES);
+
+        return ResultUtils.success(token);
+    }
+
 
     /**
      * 创建用户
