@@ -1,6 +1,7 @@
 package com.whut.friends.config;
 
 import com.whut.friends.interceptor.LoginInterceptor;
+import com.whut.friends.interceptor.RoleInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,6 +24,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor(redisTemplate));
+        registry.addInterceptor(new LoginInterceptor(redisTemplate)).order(1);
+
+        // todo 添加需要身份校验的路径
+        registry.addInterceptor(new RoleInterceptor()).order(2).addPathPatterns(
+
+        );
     }
 }
