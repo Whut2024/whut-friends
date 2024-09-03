@@ -1,6 +1,7 @@
 package com.whut.friends.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,9 +11,12 @@ import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.mapper.QuestionBankMapper;
 import com.whut.friends.model.dto.quetionbank.QuestionBankQueryRequest;
 import com.whut.friends.model.entity.QuestionBank;
+import com.whut.friends.model.entity.QuestionBankQuestion;
 import com.whut.friends.model.vo.QuestionBankVO;
+import com.whut.friends.service.QuestionBankQuestionService;
 import com.whut.friends.service.QuestionBankService;
 import com.whut.friends.utils.SqlUtils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +25,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
+@AllArgsConstructor
 public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBank> implements QuestionBankService {
+
+
+    private final QuestionBankQuestionService questionBankQuestionService;
 
 
     /**
@@ -88,13 +96,18 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
         return null;
     }
 
-    // todo 联合删除 题库-题目 表
+
     @Override
     public boolean removeQuestionBank(Long id) {
         final boolean removedQuestionBank = this.removeById(id);
         ThrowUtils.throwIf(!removedQuestionBank, ErrorCode.OPERATION_ERROR);
 
-        return removedQuestionBank;
+        final LambdaQueryWrapper<QuestionBankQuestion> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(QuestionBankQuestion::getQuestionBankId, id);
+        final boolean removedQBQ = questionBankQuestionService.remove(wrapper);
+        ThrowUtils.throwIf(!removedQBQ, ErrorCode.OPERATION_ERROR);
+
+        return true;
     }
 
 
