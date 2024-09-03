@@ -72,7 +72,7 @@ public class UserController {
         // 生成 JWT
         final Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put(UserConstant.VERSION_KEY, newVersion);
-        payloadMap.put(UserConstant.TTL, UserConstant.USER_LOGIN_TTL);
+        payloadMap.put(UserConstant.TTL, UserConstant.USER_LOGIN_TTL + System.currentTimeMillis());
         payloadMap.put(UserConstant.USER_KEY, user);
         final String token = JWTUtil.createToken(payloadMap, UserConstant.KEY_BYTES);
 
@@ -96,6 +96,7 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Boolean> loginOut() {
         final User user = UserHolder.get();
+        ThrowUtils.throwIf(user == null, ErrorCode.OPERATION_ERROR);
 
         final String cacheKey = UserConstant.USER_LOGIN_VERSION + user.getId();
         redisTemplate.opsForValue().increment(cacheKey);

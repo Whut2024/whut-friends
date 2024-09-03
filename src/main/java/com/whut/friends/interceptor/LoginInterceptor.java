@@ -1,6 +1,8 @@
 package com.whut.friends.interceptor;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
 import com.whut.friends.common.ErrorCode;
@@ -38,11 +40,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         final Object object = payload.getClaim(UserConstant.TTL);
         ThrowUtils.throwIf(object == null, ErrorCode.PARAMS_ERROR);
-        final long expireTime = (long) object;
+        final long expireTime = (Long) object;
         if (expireTime < System.currentTimeMillis())
             return true;
 
-        final User user = (User) payload.getClaim(UserConstant.USER_KEY);
+        final User user = JSONUtil.toBean((JSONObject) payload.getClaim(UserConstant.USER_KEY), User.class);
 
         final String version = (String) payload.getClaim(UserConstant.VERSION_KEY);
         final String cacheKey = UserConstant.USER_LOGIN_VERSION + user.getId();
@@ -51,8 +53,10 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(cacheVersion))
             redisTemplate.expire(cacheKey, UserConstant.USER_LOGIN_VERSION_TTL, TimeUnit.MINUTES);
 
-        if (!StrUtil.isAllNotBlank(version, cacheVersion )|| !version.equals(cacheVersion))
+        if (!StrUtil.isAllNotBlank(version, cacheVersion) || !version.equals(cacheVersion))
             return true;
+
+        UserHolder.set(user);
         return true;
     }
 
