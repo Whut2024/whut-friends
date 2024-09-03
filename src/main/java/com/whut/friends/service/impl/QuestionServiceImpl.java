@@ -1,6 +1,8 @@
 package com.whut.friends.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,18 +12,28 @@ import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.mapper.QuestionMapper;
 import com.whut.friends.model.dto.question.QuestionQueryRequest;
 import com.whut.friends.model.entity.Question;
+import com.whut.friends.model.entity.QuestionBankQuestion;
 import com.whut.friends.model.vo.QuestionVO;
+import com.whut.friends.service.QuestionBankQuestionService;
 import com.whut.friends.service.QuestionService;
 import com.whut.friends.utils.SqlUtils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 题目服务实现
  */
 @Service
 @Slf4j
+@AllArgsConstructor
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> implements QuestionService {
+
+
+    private final QuestionBankQuestionService questionBankQuestionService;
 
 
     /**
@@ -59,9 +71,24 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }
 
         final Long id = questionQueryRequest.getId();
+        final Long questionBankId = questionQueryRequest.getQuestionBankId();
         if (id != null) {
             wrapper.eq("id", id);
             return wrapper;
+        }
+
+        if (questionBankId != null) {
+            LambdaQueryWrapper<QuestionBankQuestion> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.select(QuestionBankQuestion::getQuestionId)
+                    .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
+
+            List<QuestionBankQuestion> questionBankQuestionList = questionBankQuestionService.list(queryWrapper);
+            if (!CollectionUtil.isNotEmpty(questionBankQuestionList)) {
+                wrapper.in("id",
+                        questionBankQuestionList.stream()
+                                .map(QuestionBankQuestion::getQuestionId)
+                                .collect(Collectors.toSet()));
+            }
         }
 
 
@@ -99,6 +126,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         return this.baseMapper.getUserIdById(id);
     }
 
+
     // todo 联合删除 题库-题目 表
     @Override
     public boolean removeQuestion(Long id) {
@@ -106,6 +134,16 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         ThrowUtils.throwIf(!removedQuestion, ErrorCode.OPERATION_ERROR);
 
         return removedQuestion;
+    }
+
+
+    @Override
+    public Page<Question> pageMayContainsBankId(QuestionQueryRequest questionQueryRequest) {
+        final int pageSize = questionQueryRequest.getPageSize();
+        final int current = questionQueryRequest.getCurrent();
+
+        return this.page(new Page<>(current, pageSize),
+                this.getQueryWrapper(questionQueryRequest));
     }
 
 

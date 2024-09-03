@@ -49,4 +49,13 @@ public interface QuestionService extends IService<Question> {
      */
     @Transactional
     boolean removeQuestion(Long id);
+
+
+    /**
+     * 分页查询可能包含题库编号的问题
+     *
+     * @param questionQueryRequest 问题查询请求对象，包含查询条件等信息
+     * @return 包含题库编号的问题分页对象
+     */
+    Page<Question> pageMayContainsBankId(QuestionQueryRequest questionQueryRequest);
 }

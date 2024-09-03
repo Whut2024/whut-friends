@@ -135,56 +135,9 @@ public class QuestionController {
      */
     @PostMapping("/list/page")
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-
-        final long current = questionQueryRequest.getCurrent();
-        final long size = questionQueryRequest.getPageSize();
-
-
         // 查询数据库
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        final Page<Question> questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
         return ResultUtils.success(questionPage);
-    }
-
-    /**
-     * 分页获取题目列表（封装类）
-     */
-    @PostMapping("/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-        final long current = questionQueryRequest.getCurrent();
-        final long size = questionQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        // 查询数据库
-        final Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
-        // 获取封装类
-        return ResultUtils.success(questionService.getQuestionVOPage(questionPage));
-    }
-
-    /**
-     * 分页获取当前登录用户创建的题目列表
-     */
-    @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-        ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
-
-        // 补充查询条件，只查询当前登录用户的数据
-        final User loginUser = UserHolder.get();
-        questionQueryRequest.setUserId(loginUser.getId());
-
-        final long current = questionQueryRequest.getCurrent();
-        final long size = questionQueryRequest.getPageSize();
-
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-
-        // 查询数据库
-        final Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
-        // 获取封装类
-
-        return ResultUtils.success(questionService.getQuestionVOPage(questionPage));
     }
 
     /**
