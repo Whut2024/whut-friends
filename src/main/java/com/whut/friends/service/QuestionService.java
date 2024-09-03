@@ -27,12 +27,6 @@ public interface QuestionService extends IService<Question> {
 
 
     /**
-     * 分页获取题目封装
-     */
-    Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage);
-
-
-    /**
      * 根据用户ID获取问题信息
      *
      * @param id 用户ID

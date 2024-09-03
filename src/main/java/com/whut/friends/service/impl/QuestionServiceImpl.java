@@ -116,24 +116,22 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
 
     @Override
-    public Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage) {
-        return null;
-    }
-
-
-    @Override
     public Question getUserIdById(Long id) {
         return this.baseMapper.getUserIdById(id);
     }
 
 
-    // todo 联合删除 题库-题目 表
     @Override
     public boolean removeQuestion(Long id) {
         final boolean removedQuestion = this.removeById(id);
         ThrowUtils.throwIf(!removedQuestion, ErrorCode.OPERATION_ERROR);
 
-        return removedQuestion;
+        final LambdaQueryWrapper<QuestionBankQuestion> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(QuestionBankQuestion::getQuestionId, id);
+        final boolean removedQBQ = questionBankQuestionService.remove(wrapper);
+        ThrowUtils.throwIf(!removedQBQ, ErrorCode.OPERATION_ERROR);
+
+        return true;
     }
 
 
