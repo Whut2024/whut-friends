@@ -30,7 +30,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
-        /*final String token = request.getHeader("Authorization");
+        final String token = request.getHeader("Authorization");
         if (StrUtil.isBlank(token))
             return true;
 
@@ -52,12 +52,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             redisTemplate.expire(cacheKey, UserConstant.USER_LOGIN_VERSION_TTL, TimeUnit.MINUTES);
 
         if (!StrUtil.isAllNotBlank(version, cacheVersion )|| !version.equals(cacheVersion))
-            return true;*/
-
-        final User user = new User();
-        user.setUserRole("admin");
-        user.setId(1L);
-        UserHolder.set(user);
+            return true;
         return true;
     }
 

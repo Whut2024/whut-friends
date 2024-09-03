@@ -20,9 +20,7 @@ public class UserHolder {
 
 
     public static User get() {
-        final User user = USER_THREAD_LOCAL.get();
-        ThrowUtils.throwIf(user == null, ErrorCode.NOT_LOGIN_ERROR);
-        return user;
+        return USER_THREAD_LOCAL.get();
     }
 
 

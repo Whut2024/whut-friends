@@ -2,7 +2,6 @@ package com.whut.friends.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +14,7 @@ import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.model.dto.user.*;
 import com.whut.friends.model.entity.User;
 import com.whut.friends.model.enums.UserRoleEnum;
+import com.whut.friends.model.vo.LoginUserVO;
 import com.whut.friends.model.vo.UserVO;
 import com.whut.friends.service.UserService;
 import com.whut.friends.utils.UserHolder;
@@ -47,7 +47,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public BaseResponse<String> login(@RequestBody LoginRequest loginRequest) {
+    public BaseResponse<LoginUserVO> login(@RequestBody LoginRequest loginRequest) {
         // 校验
         ThrowUtils.throwIf(loginRequest == null, ErrorCode.PARAMS_ERROR);
 
@@ -76,7 +76,31 @@ public class UserController {
         payloadMap.put(UserConstant.USER_KEY, user);
         final String token = JWTUtil.createToken(payloadMap, UserConstant.KEY_BYTES);
 
-        return ResultUtils.success(token);
+        final LoginUserVO loginUserVO = BeanUtil.copyProperties(user, LoginUserVO.class);
+        loginUserVO.setToken(token);
+        return ResultUtils.success(loginUserVO);
+    }
+
+
+    @GetMapping("/get/login")
+    public BaseResponse<UserVO> getLoginUser() {
+        User user = UserHolder.get();
+        if (user == null)
+            return ResultUtils.success(new UserVO());
+
+
+        return ResultUtils.success(BeanUtil.copyProperties(user, UserVO.class));
+    }
+
+
+    @PostMapping("/logout")
+    public BaseResponse<Boolean> loginOut() {
+        final User user = UserHolder.get();
+
+        final String cacheKey = UserConstant.USER_LOGIN_VERSION + user.getId();
+        redisTemplate.opsForValue().increment(cacheKey);
+
+        return ResultUtils.success(true);
     }
 
 
