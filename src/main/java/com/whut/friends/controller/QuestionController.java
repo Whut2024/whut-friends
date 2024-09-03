@@ -133,11 +133,13 @@ public class QuestionController {
     /**
      * 分页获取题目列表
      */
-    @PostMapping("/list/page")
-    public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+    @PostMapping("/list/page/vo")
+    public BaseResponse<Page<QuestionVO>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         // 查询数据库
         final Page<Question> questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
-        return ResultUtils.success(questionPage);
+        final Page<QuestionVO> questionVOPage = new Page<>();
+        BeanUtil.copyProperties(questionPage, questionVOPage);
+        return ResultUtils.success(questionVOPage);
     }
 
     /**
