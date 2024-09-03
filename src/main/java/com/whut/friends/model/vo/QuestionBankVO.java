@@ -1,5 +1,7 @@
 package com.whut.friends.model.vo;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.entity.QuestionBank;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +55,12 @@ public class QuestionBankVO implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+
+    /**
+     * 题目信息
+     */
+    private Page<Question> questionPage;
 
 
     private static final long serialVersionUID = 1L;
