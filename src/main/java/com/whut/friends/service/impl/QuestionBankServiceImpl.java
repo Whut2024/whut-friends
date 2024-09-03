@@ -54,6 +54,7 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
         ThrowUtils.throwIf(StrUtil.isNotBlank(picture) && picture.length() > 128, ErrorCode.PARAMS_ERROR, "参数长度错误");
     }
 
+
     /**
      * 获取查询条件
      */
@@ -87,13 +88,6 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return wrapper;
-    }
-
-
-
-    @Override
-    public Page<QuestionBankVO> getQuestionBankVOPage(Page<QuestionBank> questionBankPage) {
-        return null;
     }
 
 

@@ -32,11 +32,10 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
     private  QuestionService questionService;
 
 
-    private final QuestionBankService questionBankService;
+    @Autowired
+    @Lazy
+    private QuestionBankService questionBankService;
 
-    public QuestionBankQuestionServiceImpl(QuestionBankService questionBankService) {
-        this.questionBankService = questionBankService;
-    }
 
     /**
      * 校验数据

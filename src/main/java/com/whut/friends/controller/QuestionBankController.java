@@ -15,6 +15,7 @@ import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.entity.QuestionBank;
 import com.whut.friends.model.entity.User;
 import com.whut.friends.model.enums.UserRoleEnum;
+import com.whut.friends.model.vo.QuestionBankQuestionVO;
 import com.whut.friends.model.vo.QuestionBankVO;
 import com.whut.friends.model.vo.UserVO;
 import com.whut.friends.service.QuestionBankService;
@@ -174,10 +175,13 @@ public class QuestionBankController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
 
         // 查询数据库
-        Page<QuestionBank> questionBankPage = questionBankService.page(new Page<>(current, size), questionBankService.getQueryWrapper(questionBankQueryRequest));
+        final Page<QuestionBank> questionBankPage = questionBankService.page(new Page<>(current, size), questionBankService.getQueryWrapper(questionBankQueryRequest));
+
+        final Page<QuestionBankVO> questionBankVOPage = new Page<>();
+        BeanUtil.copyProperties(questionBankPage, questionBankVOPage);
 
         // 获取封装类
-        return ResultUtils.success(questionBankService.getQuestionBankVOPage(questionBankPage));
+        return ResultUtils.success(questionBankVOPage);
     }
 
 

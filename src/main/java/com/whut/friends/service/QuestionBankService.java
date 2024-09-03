@@ -27,12 +27,6 @@ public interface QuestionBankService extends IService<QuestionBank> {
 
 
     /**
-     * 分页获取题库封装
-     */
-    Page<QuestionBankVO> getQuestionBankVOPage(Page<QuestionBank> questionBankPage);
-
-
-    /**
      * 根据ID删除问题库
      *
      * @param id 问题库的ID
