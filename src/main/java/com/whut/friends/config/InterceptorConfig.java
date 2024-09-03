@@ -1,5 +1,6 @@
 package com.whut.friends.config;
 
+import com.whut.friends.interceptor.LogInterceptor;
 import com.whut.friends.interceptor.LoginInterceptor;
 import com.whut.friends.interceptor.RoleInterceptor;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LogInterceptor()).order(0);
+
         registry.addInterceptor(new LoginInterceptor(redisTemplate)).order(1);
 
         // todo 添加需要身份校验的路径
