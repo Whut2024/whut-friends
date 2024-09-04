@@ -15,7 +15,7 @@ public class QuestionBankSelectQuestionRequest implements Serializable {
     private final Long id;
 
 
-    private final Boolean whetherSelectQuestion;
+    private final Boolean needQueryQuestionList;
 
 
     private static final long serialVersionUID = 1L;

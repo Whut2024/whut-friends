@@ -83,7 +83,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                     .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
 
             List<QuestionBankQuestion> questionBankQuestionList = questionBankQuestionService.list(queryWrapper);
-            if (!CollectionUtil.isNotEmpty(questionBankQuestionList)) {
+            if (CollectionUtil.isNotEmpty(questionBankQuestionList)) {
                 wrapper.in("id",
                         questionBankQuestionList.stream()
                                 .map(QuestionBankQuestion::getQuestionId)

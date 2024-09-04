@@ -15,7 +15,6 @@ import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.entity.QuestionBank;
 import com.whut.friends.model.entity.User;
 import com.whut.friends.model.enums.UserRoleEnum;
-import com.whut.friends.model.vo.QuestionBankQuestionVO;
 import com.whut.friends.model.vo.QuestionBankVO;
 import com.whut.friends.model.vo.UserVO;
 import com.whut.friends.service.QuestionBankService;
@@ -142,7 +141,7 @@ public class QuestionBankController {
         final QuestionBankVO questionBankVO = QuestionBankVO.objToVo(questionBank);
 
         // 查询题目
-        final Boolean whetherSelectQuestion = selectRequest.getWhetherSelectQuestion();
+        final Boolean whetherSelectQuestion = selectRequest.getNeedQueryQuestionList();
         if (whetherSelectQuestion != null && whetherSelectQuestion) {
             final QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setQuestionBankId(id);
