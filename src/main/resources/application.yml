@@ -7,7 +7,6 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   # 数据库配置
-  # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://123.60.168.252:3300/whut_friends
