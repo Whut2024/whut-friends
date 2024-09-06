@@ -24,17 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 题目接口
- *
  */
 @RestController
 @RequestMapping("/question")
 @Slf4j
 @AllArgsConstructor
 public class QuestionController {
-    
-    
+
+
     private final QuestionService questionService;
 
 
@@ -134,13 +136,33 @@ public class QuestionController {
      * 分页获取题目列表
      */
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+    public BaseResponse<Page<QuestionVO>> listQuestionVoByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         // 查询数据库
         final Page<Question> questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
-        final Page<QuestionVO> questionVOPage = new Page<>();
-        BeanUtil.copyProperties(questionPage, questionVOPage);
+        final Page<QuestionVO> questionVOPage = new Page<>(questionPage.getCurrent(), questionPage.getSize(), questionPage.getTotal());
+
+        final List<QuestionVO> questionVOList = new ArrayList<>();
+        final List<Question> questionList = questionPage.getRecords();
+        for (Question question : questionList) {
+            questionVOList.add(QuestionVO.objToVo(question));
+        }
+        questionVOPage.setRecords(questionVOList);
+
         return ResultUtils.success(questionVOPage);
     }
+
+
+    /**
+     * 分页获取题目列表
+     */
+    @PostMapping("/list/page")
+    public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+        // 查询数据库
+        final Page<Question> questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
+
+        return ResultUtils.success(questionPage);
+    }
+
 
     /**
      * 编辑题目

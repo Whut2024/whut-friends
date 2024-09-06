@@ -1,5 +1,6 @@
 package com.whut.friends.model.vo;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -90,11 +91,7 @@ public class QuestionVO implements Serializable {
         if (question == null) {
             return null;
         }
-        QuestionVO questionVO = new QuestionVO();
-        BeanUtils.copyProperties(question, questionVO);
-        if (StrUtil.isNotBlank(question.getTags()))
-            questionVO.setTags(JSONUtil.toBean(question.getTags(), new TypeReference<List<String>>() {
-        }, false));
-        return questionVO;
+
+        return BeanUtil.copyProperties(question, QuestionVO.class);
     }
 }

@@ -165,7 +165,7 @@ public class QuestionBankController {
     /**
      * 分页获取题库列表（封装类）
      */
-    @PostMapping("/list/page/vo")
+    @PostMapping(value = {"/list/page/vo", "/list/page"})
     public BaseResponse<Page<QuestionBankVO>> listQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest) {
         final long current = questionBankQueryRequest.getCurrent();
         final long size = questionBankQueryRequest.getPageSize();
