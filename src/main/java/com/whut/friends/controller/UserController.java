@@ -9,6 +9,7 @@ import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
 import com.whut.friends.common.ResultUtils;
+import com.whut.friends.constant.RedisConstant;
 import com.whut.friends.constant.UserConstant;
 import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.model.dto.user.*;
@@ -20,12 +21,14 @@ import com.whut.friends.service.UserService;
 import com.whut.friends.utils.UserHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBitSet;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,6 +45,9 @@ public class UserController {
 
 
     private final StringRedisTemplate redisTemplate;
+
+
+    private final RedissonClient redissonClient;
 
     // region 增删改查
 
@@ -151,9 +157,6 @@ public class UserController {
 
     /**
      * 更新用户（仅管理员可用）
-     *
-     * @param userUpdateRequest
-     * @return
      */
     @PostMapping("/update")
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
@@ -182,9 +185,6 @@ public class UserController {
 
     /**
      * 根据 id 获取用户（封装类）
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/get/vo")
     public BaseResponse<UserVO> getUserVOById(long id) {
@@ -234,7 +234,7 @@ public class UserController {
     public BaseResponse<Page<UserVO>> listMyUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         ThrowUtils.throwIf(userQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
-        User loginUser = null;
+        final User loginUser = UserHolder.get();
         userQueryRequest.setId(loginUser.getId());
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
@@ -273,6 +273,63 @@ public class UserController {
         final boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+
+    /**
+     * 签到接口
+     *
+     * @return 签到结果，使用BaseResponse<Boolean>封装，其中Boolean表示签到是否成功
+     */
+    @GetMapping("/add/sign_in")
+    public BaseResponse<Boolean> signIn() {
+        // 获取当前用户
+        final User user = UserHolder.get();
+
+        // 获取分布式 bitset
+        final int year = LocalDateTime.now().getYear();
+        final String cacheKey = RedisConstant.getSignKey(String.valueOf(year), user.getId());
+        final RBitSet bitSet = redissonClient.getBitSet(cacheKey);
+
+        //校验当天登录情况
+        final LocalDateTime localDateTime = LocalDateTime.now();
+        final int dayOfYear = localDateTime.getDayOfYear();
+
+        boolean hadSigned = bitSet.get(dayOfYear);
+        if (!hadSigned)
+            bitSet.set(dayOfYear);
+
+        // 返回前端
+        return ResultUtils.success(Boolean.TRUE);
+    }
+
+
+    /**
+     * 获取年度签到记录
+     *
+     * @return 包含签到年份列表的BaseResponse对象
+     */
+    @GetMapping("/get/sign_in")
+    public BaseResponse<List<Integer>> getSignIn(@RequestParam Integer year) {
+        // 获取当前登录用户
+        final User user = UserHolder.get();
+
+        // 获取分布式bitset
+        final String cacheKey = RedisConstant.getSignKey(String.valueOf(year), user.getId());
+        final RBitSet bitSet = redissonClient.getBitSet(cacheKey);
+
+        // 本地化bitset
+        final BitSet localBitSet = bitSet.asBitSet();
+
+        // 位运算计算签到日期
+        int dayOfYear = 0;
+        final List<Integer> dateList = new ArrayList<>();
+
+        while ((dayOfYear = localBitSet.nextSetBit(dayOfYear + 1)) != -1)
+            dateList.add(dayOfYear);
+
+        // 返回前端
+        return ResultUtils.success(dateList);
     }
 
     // endregion
