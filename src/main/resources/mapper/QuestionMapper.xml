@@ -24,4 +24,20 @@
         where isDelete = 0
           and id = #{id};
     </select>
+
+    <select id="getAfterUpdateTimeQuestion" resultType="com.whut.friends.model.entity.Question">
+        select id,
+               title,
+               content,
+               tags,
+               answer,
+               userId,
+               editTime,
+               createTime,
+               updateTime,
+               isDelete
+        from whut_friends.question
+        where updateTime > #{timestamp};
+
+    </select>
 </mapper>

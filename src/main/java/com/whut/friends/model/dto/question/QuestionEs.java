@@ -17,7 +17,7 @@ import java.util.List;
 
 @Document(indexName = "question")
 @Data
-public class QuestionEsDto implements Serializable {
+public class QuestionEs implements Serializable {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
@@ -77,32 +77,32 @@ public class QuestionEsDto implements Serializable {
      * @param question
      * @return
      */
-    public static QuestionEsDto objToDto(Question question) {
+    public static QuestionEs objToDto(Question question) {
         if (question == null) {
             return null;
         }
-        QuestionEsDto questionEsDTO = new QuestionEsDto();
-        BeanUtils.copyProperties(question, questionEsDTO);
+        QuestionEs questionEs = new QuestionEs();
+        BeanUtils.copyProperties(question, questionEs);
         String tagsStr = question.getTags();
         if (StrUtil.isNotBlank(tagsStr)) {
-            questionEsDTO.setTags(JSONUtil.toList(tagsStr, String.class));
+            questionEs.setTags(JSONUtil.toList(tagsStr, String.class));
         }
-        return questionEsDTO;
+        return questionEs;
     }
 
     /**
      * 包装类转对象
      *
-     * @param questionEsDTO
+     * @param questionEs
      * @return
      */
-    public static Question dtoToObj(QuestionEsDto questionEsDTO) {
-        if (questionEsDTO == null) {
+    public static Question dtoToObj(QuestionEs questionEs) {
+        if (questionEs == null) {
             return null;
         }
         Question question = new Question();
-        BeanUtils.copyProperties(questionEsDTO, question);
-        List<String> tagList = questionEsDTO.getTags();
+        BeanUtils.copyProperties(questionEs, question);
+        List<String> tagList = questionEs.getTags();
         if (CollUtil.isNotEmpty(tagList)) {
             question.setTags(JSONUtil.toJsonStr(tagList));
         }
