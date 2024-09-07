@@ -281,7 +281,7 @@ public class UserController {
      *
      * @return 签到结果，使用BaseResponse<Boolean>封装，其中Boolean表示签到是否成功
      */
-    @GetMapping("/add/sign_in")
+    @PostMapping("/add/sign_in")
     public BaseResponse<Boolean> signIn() {
         // 获取当前用户
         final User user = UserHolder.get();
