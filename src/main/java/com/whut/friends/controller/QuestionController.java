@@ -7,6 +7,7 @@ import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
 import com.whut.friends.common.ResultUtils;
+import com.whut.friends.esdto.QuestionEsDto;
 import com.whut.friends.exception.BusinessException;
 import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.model.dto.question.QuestionAddRequest;
@@ -21,11 +22,22 @@ import com.whut.friends.service.QuestionService;
 import com.whut.friends.utils.UserHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 /**
  * 题目接口
@@ -33,11 +45,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/question")
 @Slf4j
-@AllArgsConstructor
 public class QuestionController {
 
 
     private final QuestionService questionService;
+
+
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
+    }
+
+
+    @Autowired(required = false)
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
 
     // region 增删改查
@@ -192,4 +212,31 @@ public class QuestionController {
     }
 
     // endregion
+
+
+    @PostMapping("/search/page/vo")
+    public BaseResponse<Page<Question>> searchPageVo(@RequestBody QuestionQueryRequest questionQueryRequest) {
+        ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
+
+        final int pageSize = questionQueryRequest.getPageSize();
+        ThrowUtils.throwIf(pageSize > 30, ErrorCode.PARAMS_ERROR);
+
+        Page<Question> questionPage = null;
+
+        if (elasticsearchRestTemplate != null) {
+            FutureTask<Page<Question>> esTask = new FutureTask<>(() -> questionService.searchFromEs(questionQueryRequest));
+            try {
+                esTask.run();
+                questionPage = esTask.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.warn(e.toString());
+            }
+        }
+
+        // 容错兜底
+        if (questionPage == null)
+            questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
+
+        return ResultUtils.success(questionPage);
+    }
 }

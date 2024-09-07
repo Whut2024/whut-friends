@@ -52,4 +52,13 @@ public interface QuestionService extends IService<Question> {
      * @return 包含题库编号的问题分页对象
      */
     Page<Question> pageMayContainsBankId(QuestionQueryRequest questionQueryRequest);
+
+
+    /**
+     * 从Elasticsearch中搜索问题列表并返回分页结果
+     *
+     * @param questionQueryRequest 问题查询请求对象，包含查询条件
+     * @return 分页结果，包含问题列表和分页信息
+     */
+    Page<Question> searchFromEs(QuestionQueryRequest questionQueryRequest);
 }

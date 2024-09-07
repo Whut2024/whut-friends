@@ -9,14 +9,14 @@ spring:
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.121.138.177:3300/whut_friends
+    url: jdbc:mysql://123.60.168.252:3300/whut_friends
     username: root
     password: whut
   # Redis 配置
   # todo 需替换配置，然后取消注释
   redis:
     database: 1
-    host: 47.121.138.177
+    host: 123.60.168.252
     port: 6300
     timeout: 5000
     password: whut
@@ -33,7 +33,7 @@ server:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名

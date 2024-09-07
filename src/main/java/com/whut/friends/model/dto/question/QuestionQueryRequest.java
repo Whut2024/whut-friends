@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 查询题目请求
@@ -24,15 +25,18 @@ public class QuestionQueryRequest extends PageRequest implements Serializable {
      */
     private String title;
 
+
+    /**
+     * 搜索内容
+     */
+    private String searchText;
+
+
     /**
      * 内容
      */
     private String content;
 
-    /**
-     * 标签列表（json 数组）
-     */
-    private String tags;
 
     /**
      * 推荐答案
@@ -49,6 +53,18 @@ public class QuestionQueryRequest extends PageRequest implements Serializable {
      * 题库Id
      */
     private Long questionBankId;
+
+
+    /**
+     * 标签列表（json 数组）
+     */
+    private List<String> tags;
+
+
+    /**
+     * 不查询ID
+     */
+    private Long notId;
 
 
     private static final long serialVersionUID = 1L;
