@@ -1,6 +1,7 @@
 package com.whut.friends.esjob;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.whut.friends.annotation.DistributedLock;
 import com.whut.friends.esdto.QuestionEsDto;
 import com.whut.friends.mapper.QuestionMapper;
 import com.whut.friends.model.dto.question.QuestionEs;
@@ -32,7 +33,7 @@ public class IncSyncQuestion {
 
     private final QuestionEsDto questionEsDto;
 
-
+    @DistributedLock(key = "elasticsearch:inc-sys")
     @Scheduled(fixedRate = 60000L, initialDelay = 120000L)
     void incSycQuestion() {
         // 获取最近更新数据
