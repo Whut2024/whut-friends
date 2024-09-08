@@ -30,8 +30,29 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor(redisTemplate)).order(1);
 
         // todo 添加需要身份校验的路径
-        /*registry.addInterceptor(new RoleInterceptor()).order(2).addPathPatterns(
+        registry.addInterceptor(new RoleInterceptor()).order(2).addPathPatterns(
+                // user
+                "/user/add",
+                "/user/delete",
+                "/user/list/page",
+                "/user/list/page/vo",
+                "/user/my/list/page/vo",
 
-        );*/
+                // question
+                "/question/add",
+                "/question/delete",
+                "/question/edit",
+                "/question/update",
+
+                // question bank
+                "/questionBank/add",
+                "/questionBank/delete",
+                "/questionBank/edit",
+                "/questionBank/update",
+
+                // question bank question
+                "/questionBankQuestion/add",
+                "/questionBankQuestion/remove"
+        );
     }
 }
