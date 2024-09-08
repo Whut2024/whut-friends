@@ -7,6 +7,8 @@ import com.whut.friends.model.dto.question.QuestionEs;
 import com.whut.friends.model.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 //@Component
 @AllArgsConstructor
+@ConditionalOnBean(QuestionEsDto.class)
 public class FullSyncQuestion {
 
 

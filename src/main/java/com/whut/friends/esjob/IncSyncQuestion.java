@@ -8,6 +8,8 @@ import com.whut.friends.model.dto.question.QuestionEs;
 import com.whut.friends.model.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 @Component
 @AllArgsConstructor
 @Slf4j
+@ConditionalOnBean(QuestionEsDto.class)
 public class IncSyncQuestion {
 
 
