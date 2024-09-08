@@ -25,12 +25,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LogInterceptor()).order(0);
+        registry.addInterceptor(new LogInterceptor());
 
-        registry.addInterceptor(new LoginInterceptor(redisTemplate)).order(1);
+        registry.addInterceptor(new LoginInterceptor(redisTemplate));
 
-        // todo 添加需要身份校验的路径
-        registry.addInterceptor(new RoleInterceptor()).order(2).addPathPatterns(
+        registry.addInterceptor(new RoleInterceptor()).addPathPatterns(
                 // user
                 "/user/add",
                 "/user/delete",

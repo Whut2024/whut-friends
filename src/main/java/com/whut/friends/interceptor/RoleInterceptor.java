@@ -6,6 +6,7 @@ import com.whut.friends.utils.NetUtils;
 import com.whut.friends.utils.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 public class RoleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
+        // 放行跨域预检
+        if (request.getMethod().equals(HttpMethod.OPTIONS.name()))
+            return true;
 
         final User user = UserHolder.get();
 
