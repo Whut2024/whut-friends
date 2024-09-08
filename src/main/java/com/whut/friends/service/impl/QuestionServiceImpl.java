@@ -119,11 +119,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         final String searchText = questionQueryRequest.getSearchText();
 
         if (StrUtil.isNotBlank(searchText))
-            wrapper.like("title", searchText).like("content", searchText);
+            wrapper.like("title", searchText).or().like("content", searchText);
 
 
-        wrapper.like(StrUtil.isNotBlank(title), "title", title);
-        wrapper.like(StrUtil.isNotBlank(content), "content", content);
+        wrapper.or().like(StrUtil.isNotBlank(title), "title", title);
+        wrapper.or().like(StrUtil.isNotBlank(content), "content", content);
 
         if (CollectionUtil.isNotEmpty(tagStrList)) {
             for (String tag : tagStrList)
@@ -131,7 +131,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
         }
 
-        wrapper.like(StrUtil.isNotBlank(answer), "answer", answer);
+        wrapper.or().like(StrUtil.isNotBlank(answer), "answer", answer);
         wrapper.eq(userId != null, "userId", userId);
 
 
