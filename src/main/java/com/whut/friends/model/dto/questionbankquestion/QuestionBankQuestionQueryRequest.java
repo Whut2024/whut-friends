@@ -19,6 +19,13 @@ public class QuestionBankQuestionQueryRequest extends PageRequest implements Ser
      */
     private Long id;
 
+
+    /**
+     * not id
+     */
+    private Long notId;
+
+
     /**
      * 题目 id
      */

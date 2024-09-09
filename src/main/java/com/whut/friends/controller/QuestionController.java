@@ -1,6 +1,7 @@
 package com.whut.friends.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.friends.common.BaseResponse;
@@ -123,6 +124,7 @@ public class QuestionController {
         ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR);
 
         final Question question = BeanUtil.copyProperties(questionUpdateRequest, Question.class);
+        question.setTags(JSONUtil.toJsonStr(questionUpdateRequest.getTags()));
 
         // 数据校验
         questionService.validQuestion(question, false);

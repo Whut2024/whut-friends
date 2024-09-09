@@ -72,9 +72,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         ThrowUtils.throwIf(!add && (id == null || id <= 0), ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(!add && userId != null && userId <= 0, ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(StrUtil.isNotBlank(title) && title.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
-        ThrowUtils.throwIf(StrUtil.isNotBlank(content) && content.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
-        ThrowUtils.throwIf(StrUtil.isNotBlank(tags) && tags.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
-        ThrowUtils.throwIf(StrUtil.isNotBlank(answer) && answer.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(content) && content.length() > 2048, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(tags) && tags.length() > 2048, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(answer) && answer.length() > 8192, ErrorCode.PARAMS_ERROR, "参数长度错误");
     }
 
     /**

@@ -49,9 +49,9 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
 
         ThrowUtils.throwIf(!add && (id == null || id <= 0), ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(!add && userId != null && userId <= 0, ErrorCode.PARAMS_ERROR);
-        ThrowUtils.throwIf(StrUtil.isNotBlank(title) && title.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
-        ThrowUtils.throwIf(StrUtil.isNotBlank(description) && description.length() > 80, ErrorCode.PARAMS_ERROR, "参数长度错误");
-        ThrowUtils.throwIf(StrUtil.isNotBlank(picture) && picture.length() > 128, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(title) && title.length() > 2048, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(description) && description.length() > 2048, ErrorCode.PARAMS_ERROR, "参数长度错误");
+        ThrowUtils.throwIf(StrUtil.isNotBlank(picture) && picture.length() > 2048, ErrorCode.PARAMS_ERROR, "参数长度错误");
     }
 
 
