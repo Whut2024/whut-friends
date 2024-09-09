@@ -2,6 +2,7 @@ package com.whut.friends.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
@@ -14,6 +15,7 @@ import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionQuery
 import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionRemoveRequest;
 import com.whut.friends.model.entity.QuestionBankQuestion;
 import com.whut.friends.model.entity.User;
+import com.whut.friends.model.vo.QuestionBankQuestionVO;
 import com.whut.friends.service.QuestionBankQuestionService;
 import com.whut.friends.utils.UserHolder;
 import lombok.AllArgsConstructor;
@@ -86,6 +88,24 @@ public class QuestionBankQuestionController {
         return ResultUtils.success(true);
     }
 
+
+    @PostMapping("/list/page/vo")
+    public BaseResponse<Page<QuestionBankQuestion>> getQuestionBankQuestionVo(QuestionBankQuestionQueryRequest queryRequest) {
+        ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR);
+
+        int current = queryRequest.getCurrent();
+        final int pageSize = queryRequest.getPageSize();
+
+        if (current == 0)
+            current = 1;
+
+        final QueryWrapper<QuestionBankQuestion> wrapper = questionBankQuestionService.getQueryWrapper(queryRequest);
+
+        final Page<QuestionBankQuestion> questionBankQuestionPage = questionBankQuestionService.page(new Page<>(current, pageSize), wrapper);
+
+
+        return ResultUtils.success(questionBankQuestionPage);
+    }
 
     // endregion
 }
