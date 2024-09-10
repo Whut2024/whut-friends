@@ -8,6 +8,8 @@ import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.vo.QuestionVO;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 题目服务
  *
@@ -61,4 +63,7 @@ public interface QuestionService extends IService<Question> {
      * @return 分页结果，包含问题列表和分页信息
      */
     Page<Question> searchFromEs(QuestionQueryRequest questionQueryRequest);
+
+
+    void deleteBatch(List<Long> questionIdList);
 }

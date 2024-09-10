@@ -5,22 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.friends.common.BaseResponse;
-import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
 import com.whut.friends.common.ResultUtils;
-import com.whut.friends.exception.BusinessException;
 import com.whut.friends.exception.ThrowUtils;
-import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionAddRequest;
-import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionQueryRequest;
-import com.whut.friends.model.dto.questionbankquestion.QuestionBankQuestionRemoveRequest;
+import com.whut.friends.model.dto.questionbankquestion.*;
 import com.whut.friends.model.entity.QuestionBankQuestion;
 import com.whut.friends.model.entity.User;
-import com.whut.friends.model.vo.QuestionBankQuestionVO;
 import com.whut.friends.service.QuestionBankQuestionService;
 import com.whut.friends.utils.UserHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,4 +102,24 @@ public class QuestionBankQuestionController {
     }
 
     // endregion
+
+
+    @PostMapping("/add/batch")
+    public BaseResponse<Boolean> batchAddQuestionToBank(@RequestBody QuestionBankQuestionMultiRequest addRequest) {
+        ThrowUtils.throwIf(addRequest == null, ErrorCode.PARAMS_ERROR);
+
+        questionBankQuestionService.batchAddQuestionToBank(addRequest);
+
+        return ResultUtils.success(Boolean.TRUE);
+    }
+
+
+    @PostMapping("/remove/batch")
+    public BaseResponse<Boolean> batchRemoveQuestionFromBank(@RequestBody QuestionBankQuestionMultiRequest removeRequest) {
+        ThrowUtils.throwIf(removeRequest == null, ErrorCode.PARAMS_ERROR);
+
+        questionBankQuestionService.batchRemoveQuestionFromBank(removeRequest);
+
+        return ResultUtils.success(Boolean.TRUE);
+    }
 }

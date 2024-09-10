@@ -26,6 +26,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -33,9 +34,14 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -247,6 +253,52 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }
         page.setRecords(resourceList);
         return page;
+    }
+
+    @Override
+    public void deleteBatch(List<Long> questionIdList) {
+        final int pageSize = 100;
+        final int size = questionIdList.size();
+
+
+        // 自定义 IO密集线程池
+        final ThreadPoolExecutor customExecutor = new ThreadPoolExecutor(
+                4,                         // 核心线程数
+                10,                        // 最大线程数
+                60L,                       // 线程空闲存活时间
+                TimeUnit.SECONDS,           // 存活时间单位
+                new LinkedBlockingQueue<>(1000),  // 阻塞队列容量
+                new ThreadPoolExecutor.CallerRunsPolicy() // 拒绝策略：由调用线程处理任务
+        );
+
+        final QuestionServiceImpl questionServiceImpl = (QuestionServiceImpl) AopContext.currentProxy();
+        final List<CompletableFuture<Void>> futureList = new ArrayList<>(size / pageSize + 1);
+
+        for (int i = 0; i < size; i += pageSize) {
+            final List<Long> questionIdPartList = questionIdList.subList(i, Math.min(i + pageSize, size));
+
+            final LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<>();
+            questionWrapper.select(Question::getId).in(Question::getId, questionIdPartList);
+            final List<Long> existentQuestionIdList = this.listObjs(questionWrapper, id -> (Long) id);
+
+            final LambdaQueryWrapper<QuestionBankQuestion> qbqWrapper = new LambdaQueryWrapper<>();
+            qbqWrapper.select(QuestionBankQuestion::getId).in(QuestionBankQuestion::getQuestionId, existentQuestionIdList);
+            final List<Long> existentQbqIdList = questionBankQuestionService.listObjs(qbqWrapper, id -> (Long) id);
+
+            futureList.add(CompletableFuture.runAsync(() -> questionServiceImpl.removeBatchQuestion(questionIdPartList, existentQbqIdList), customExecutor));
+        }
+
+        CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
+
+        customExecutor.shutdown();
+    }
+
+
+    @Transactional
+    public void removeBatchQuestion(List<Long> questionIdPartList, List<Long> existentQbqIdList) {
+        final boolean removed = this.removeBatchByIds(questionIdPartList);
+        ThrowUtils.throwIf(!removed, ErrorCode.OPERATION_ERROR);
+        questionBankQuestionService.removeBatchByIds(existentQbqIdList);
     }
 
 

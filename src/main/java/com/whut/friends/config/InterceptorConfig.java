@@ -51,7 +51,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
                 // question bank question
                 "/questionBankQuestion/add",
-                "/questionBankQuestion/remove"
+                "/questionBankQuestion/remove",
+                "/questionBankQuestion/add/batch",
+                "/questionBankQuestion/remove/batch"
         );
     }
 }

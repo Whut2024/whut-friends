@@ -9,7 +9,7 @@ spring:
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://123.60.168.252:3300/whut_friends
+    url: jdbc:mysql://47.121.138.177:3300/whut_friends
     username: root
     password: whut
   # Redis 配置
@@ -27,7 +27,7 @@ spring:
     password:
 server:
   address: 0.0.0.0
-  port: 8081
+  port: 8101
   servlet:
     context-path: /api
 mybatis-plus:

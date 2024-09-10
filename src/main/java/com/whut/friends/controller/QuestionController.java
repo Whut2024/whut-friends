@@ -1,6 +1,7 @@
 package com.whut.friends.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,10 +12,7 @@ import com.whut.friends.common.ResultUtils;
 import com.whut.friends.esdto.QuestionEsDto;
 import com.whut.friends.exception.BusinessException;
 import com.whut.friends.exception.ThrowUtils;
-import com.whut.friends.model.dto.question.QuestionAddRequest;
-import com.whut.friends.model.dto.question.QuestionEditRequest;
-import com.whut.friends.model.dto.question.QuestionQueryRequest;
-import com.whut.friends.model.dto.question.QuestionUpdateRequest;
+import com.whut.friends.model.dto.question.*;
 import com.whut.friends.model.entity.Question;
 import com.whut.friends.model.entity.User;
 import com.whut.friends.model.enums.UserRoleEnum;
@@ -240,5 +238,17 @@ public class QuestionController {
             questionPage = questionService.pageMayContainsBankId(questionQueryRequest);
 
         return ResultUtils.success(questionPage);
+    }
+
+
+    @PostMapping("/delete/batch")
+    public BaseResponse<Boolean> deleteBatch(@RequestBody QuestionMultiRequest removeRequest) {
+        ThrowUtils.throwIf(removeRequest == null, ErrorCode.PARAMS_ERROR);
+        final List<Long> questionIdList = removeRequest.getQuestionIdList();
+        ThrowUtils.throwIf(questionIdList == null || CollectionUtil.isEmpty(questionIdList), ErrorCode.PARAMS_ERROR, "问题参数为NULL");
+
+        questionService.deleteBatch(questionIdList);
+
+        return ResultUtils.success(Boolean.TRUE);
     }
 }
