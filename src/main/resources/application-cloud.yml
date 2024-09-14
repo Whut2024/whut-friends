@@ -1,0 +1,15 @@
+# 公共配置文件
+spring:
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3300/whut_friends?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+    # Druid 配置
+    druid:
+      stat-view-servlet:
+        allow: * # 允许访问的地址，如果allow没有配置或者为空，则允许所有访问
+  # Redis 配置
+  redis:
+    host: localhost
+  # Elasticsearch 配置
+  elasticsearch:
+    uris: http://localhost:9200
