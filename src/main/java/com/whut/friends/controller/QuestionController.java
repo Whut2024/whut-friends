@@ -9,7 +9,6 @@ import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
 import com.whut.friends.common.ResultUtils;
-import com.whut.friends.esdto.QuestionEsDto;
 import com.whut.friends.exception.BusinessException;
 import com.whut.friends.exception.ThrowUtils;
 import com.whut.friends.model.dto.question.*;
@@ -19,24 +18,16 @@ import com.whut.friends.model.enums.UserRoleEnum;
 import com.whut.friends.model.vo.QuestionVO;
 import com.whut.friends.service.QuestionService;
 import com.whut.friends.utils.UserHolder;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /**
  * 题目接口

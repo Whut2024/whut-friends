@@ -14,15 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class LogInterceptor implements HandlerInterceptor {
 
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        final String requestURI = request.getRequestURI();
-        log.info("请求地址: {}", requestURI);
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        return HandlerInterceptor.super.preHandle(request, response, handler);
+        final String requestURI = request.getRequestURI();
+        log.info("请求地址: {}", requestURI);
+        return true;
     }
 }
