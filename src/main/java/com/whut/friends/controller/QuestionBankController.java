@@ -3,6 +3,7 @@ package com.whut.friends.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.friends.annotation.HotKeyCache;
 import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
@@ -126,6 +127,7 @@ public class QuestionBankController {
      * 根据 id 获取题库（封装类）
      */
     @GetMapping("/get/vo")
+    @HotKeyCache(prefix = "wf_qb_")
     public BaseResponse<QuestionBankVO> getQuestionBankVOById(@ModelAttribute QuestionBankSelectQuestionRequest selectRequest) {
         // 校验
         ThrowUtils.throwIf(selectRequest == null, ErrorCode.PARAMS_ERROR);

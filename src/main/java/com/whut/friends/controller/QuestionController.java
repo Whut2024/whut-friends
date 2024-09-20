@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.friends.annotation.HotKeyCache;
 import com.whut.friends.common.BaseResponse;
 import com.whut.friends.common.DeleteRequest;
 import com.whut.friends.common.ErrorCode;
@@ -134,6 +135,7 @@ public class QuestionController {
      * 根据 id 获取题目（封装类）
      */
     @GetMapping("/get/vo")
+    @HotKeyCache(prefix = "wf_q_")
     public BaseResponse<QuestionVO> getQuestionVOById(long id) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
         // 查询数据库

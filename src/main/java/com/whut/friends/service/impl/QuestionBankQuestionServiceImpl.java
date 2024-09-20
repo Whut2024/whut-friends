@@ -90,7 +90,7 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
         final Long userId = UserHolder.get().getId();
 
         // 加工数据，过滤已经存在的 题目 题库关联，生成新题目 题库关联
-        final  Function<List<Long>, List<QuestionBankQuestion>> getQualifiedQbq = questionIdPartList -> {
+        final Function<List<Long>, List<QuestionBankQuestion>> getQualifiedQbq = questionIdPartList -> {
             final LambdaQueryWrapper<QuestionBankQuestion> wrapper = new LambdaQueryWrapper<>();
             wrapper
                     .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
